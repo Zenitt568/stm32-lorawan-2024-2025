@@ -14,7 +14,7 @@
 // Serial port use to communicate with the USI shield.
 // By default, use D0 (Rx) and D1(Tx).
 // For Nucleo64, see "Known limitations" chapter in the README.md
-HardwareSerial SerialLora(D0, D1);
+HardwareSerial SerialLora(D2, D8);
 
 // Messages to exchange
 uint8_t PingMsg[] = "PING";
