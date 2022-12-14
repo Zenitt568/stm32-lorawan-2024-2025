@@ -5,7 +5,7 @@ You need to connect default Arduino shield UART pins to other pins on the Nucleo
 
 https://github.com/stm32duino/wiki/wiki/Getting-Started
 
-### W Arduino IDE w Preferancjach wkleić do "Dodatkowe adresy URL do menedżera płytek": https://github.com/stm32duino/BoardManagerFiles/raw/main/package_stmicroelectronics_index.json
+W Arduino IDE w Preferancjach wkleić do "Dodatkowe adresy URL do menedżera płytek": https://github.com/stm32duino/BoardManagerFiles/raw/main/package_stmicroelectronics_index.json
 
 ### NASTĘPNIE TRZEBA POBRAĆ DWIE BIBLIOTEKI W ARDUINO
 
