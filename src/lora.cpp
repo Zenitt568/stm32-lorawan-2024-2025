@@ -1,25 +1,24 @@
 #include "lora.h"
+#include "config.h"
+#include "bme280_sensor.h"
 
 HardwareSerial SerialLora(PA10, PA9);
 
-void LoRa::ShieldInit(ModuleType_t moduleType)
+namespace LoRa{
+
+
+void ShieldInit(void)
 {
-    Serial.begin(115200);
+    Serial.begin(SERIAL_SPEED);
 
-    switch (moduleType)
-    {
-    case SLAVE:
-        Serial.println("LoRa SLAVE Module");
-        break;
+#if SW_TYPE == SLAVE
+    Serial.println("LoRa SLAVE Module");
 
-    case MASTER:
-        Serial.println("LoRa MASTER Module");
-        break;
+#elif SW_TYPE == MASTER
+    Serial.println("LoRa MASTER Module");
 
-    default:
-        break;
-    }
-
+#endif // SW_TYPE
+    
     while (!loraRadio.begin(&SerialLora))
     {
         Serial.println("[INFO] LoRa Shield not ready!");
@@ -28,19 +27,21 @@ void LoRa::ShieldInit(ModuleType_t moduleType)
 
     Serial.println("[INFO] Shield ready!");
 
-    if (moduleType == SLAVE)
-    {
-        BME280::HardwareInit();
-    }
+
+#if SW_TYPE == SLAVE
+    BME280::HardwareInit();     // Init BME280 sensor duplicate
+
+#endif // SW_TYPE == SLAVE
+    
 }
 
-void LoRa::DataInit(DataReceived_t *data)
+void DataInit_Lora(DataReceived_t *data)
 {
     data->temperature = 0;
     data->pressure = 0;
 }
 
-void LoRa::SendRequest(void)
+void SendRequest(void)
 {
     uint8_t message[1];
     message[0] = 0xFF;
@@ -50,29 +51,28 @@ void LoRa::SendRequest(void)
     loraRadio.write(message, 1);
 }
 
-void LoRa::SendResponse(DataRead_t *data)
+void SendResponse(DataRead_t *data)
 {
-    uint8_t message[8];
+    uint8_t message[MESSAGE_SIZE];
 
     /* Split each 16-bit data to 2x8-bit ones, with bit masking */
     message[0] = (data->temperature & 0xFF00) >> 8;
     message[1] = (data->temperature & 0x00FF);
-
     message[2] = (data->pressure & 0xFF00) >> 8;
     message[3] = (data->pressure & 0x00FF);
 
     Serial.println("[INFO] Sending response");
 
-    loraRadio.write(message, 8);
+    loraRadio.write(message, MESSAGE_SIZE);
 }
 
-void LoRa::ReadResponse(DataReceived_t *data, uint8_t message[])
+void ReadResponse(DataReceived_t *data, uint8_t message[])
 {
     /* Merge each 2x8-bit packs to 16-bit ones, fix floats */
     data->temperature = (float)((message[0] << 8) + message[1]) / 100;
     data->pressure = (float)((message[2] << 8) + message[3]);
 
-    memset(message, 0, 8);
+    memset(message, 0, MESSAGE_SIZE);
 
     /* Message strings array */
     String serialMessage[3] = {
@@ -87,4 +87,5 @@ void LoRa::ReadResponse(DataReceived_t *data, uint8_t message[])
     }
 
     Serial.println();
+}
 }

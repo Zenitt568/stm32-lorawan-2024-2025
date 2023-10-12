@@ -4,7 +4,6 @@
 #include <Arduino.h>
 #include <Wire.h>
 #include <SPI.h>
-
 #include "Adafruit_Sensor.h"
 #include "Adafruit_BME280.h"
 
@@ -14,7 +13,8 @@
 
 #define SEA_LEVEL_PRESSURE 1013.25
 
-typedef struct
+
+typedef struct      
 {
     uint16_t temperature;
     uint16_t pressure;
@@ -29,9 +29,9 @@ typedef struct
 namespace BME280
 {
     /* Inits BME280 sensor*/
-    extern void HardwareInit(void);
-    extern void DataInit(DataRead_t *data);
-    extern void ReadData(DataRead_t *data);
+    void HardwareInit(void);
+    void DataInit_Bme280(DataRead_t *data);
+    void ReadData(DataRead_t *data);
 };
 
 #endif /* _BME_280 */

@@ -2,7 +2,9 @@
 
 Adafruit_BME280 sensor;
 
-void BME280::HardwareInit(void)
+namespace BME280{
+
+void HardwareInit(void)
 {
     Serial.println("[INFO] Trying to connect BME280 sensor...");
 
@@ -21,15 +23,16 @@ void BME280::HardwareInit(void)
     Serial.println("[INFO] BME280 sensor connected.");
 }
 
-void BME280::DataInit(DataRead_t *data)
+void DataInit_Bme280(DataRead_t *data) // name duplicate
 {
     data->temperature = 0;
     data->pressure = 0;
 }
 
-void BME280::ReadData(DataRead_t *data)
+void ReadData(DataRead_t *data)
 {
     /* Magnitude change for easier sending */
     data->temperature = (sensor.readTemperature() * 100);
     data->pressure = (sensor.readPressure() / 100.00f);
+}
 }

@@ -1,45 +1,59 @@
 #include "main.h"
+#include "lora.h"
+#include "bme280_sensor.h"
 
 /**
  * Defines how the module behaves
  * Options: MASTER, SLAVE
  */
-#define MODULE_TYPE LoRa::MASTER
-
 uint8_t requestMessage[1];
-uint8_t receivedMessage[8];
+uint8_t receivedMessage[MESSAGE_SIZE];
 
 bool nextMessage = true;
 uint8_t interruptState = 0;
 uint32_t currentTime = 0;
 
-LoRa::ModuleType_t moduleType = MODULE_TYPE;
+//LoRa::ModuleType_t moduleType = MODULE_TYPE;
 DataRead_t sensorData;
 DataReceived_t receivedData;
 
-void ButtonClickInterrupt(void);
+void ButtonClickInterrupt(void); //why fp here?
 
 void setup()
 {
+// TODO: ADD INIT FUNCTIONS WITH CRC 
   /* Init LoRa shield */
-  LoRa::ShieldInit(MODULE_TYPE);
+  LoRa::ShieldInit();  //dont need to pass module type, it is defined in config.h
 
   /* Init data container structs */
-  BME280::DataInit(&sensorData);
-  LoRa::DataInit(&receivedData);
+  BME280::DataInit_Bme280(&sensorData);  // Init BME280 sensor duplicate
+  LoRa::DataInit_Lora(&receivedData);
 
-  if (moduleType == LoRa::MASTER)
-  {
+#if SW_TYPE == MASTER
     attachInterrupt(digitalPinToInterrupt(BOARD_BTN), ButtonClickInterrupt, RISING);
-  }
+
+#endif // SW_TYPE == MASTER
+
+
 }
 
 void loop()
 {
 
-  switch (moduleType)
-  {
-  case LoRa::SLAVE:
+  // TODO: ADD HEARTBEAT FUNCTION
+  #if SW_TYPE == MASTER
+    if (interruptState)
+    {
+      LoRa::SendRequest();    // Should communication be done here or in lora.cpp?
+      BOOL(interruptState);
+    }
+
+    if (loraRadio.read(receivedMessage) > 0)
+    {
+      LoRa::ReadResponse(&receivedData, receivedMessage);
+    }
+
+  #elif SW_TYPE == SLAVE
     if (loraRadio.read(requestMessage) == 0x04)
     {
       memset(requestMessage, 0, 1);
@@ -48,24 +62,7 @@ void loop()
       BME280::ReadData(&sensorData);
       LoRa::SendResponse(&sensorData);
     }
-    break;
-
-  case LoRa::MASTER:
-    if (interruptState)
-    {
-      LoRa::SendRequest();
-      BOOL(interruptState);
-    }
-
-    if (loraRadio.read(receivedMessage) > 0)
-    {
-      LoRa::ReadResponse(&receivedData, receivedMessage);
-    }
-    break;
-
-  default:
-    break;
-  }
+  #endif
 }
 
 void ButtonClickInterrupt(void)
