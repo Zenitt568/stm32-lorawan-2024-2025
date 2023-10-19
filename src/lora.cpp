@@ -69,6 +69,8 @@ void SendResponse(DataRead_t *data)
 void ReadResponse(DataReceived_t *data, uint8_t message[])
 {
     /* Merge each 2x8-bit packs to 16-bit ones, fix floats */
+
+    
     data->temperature = (float)((message[0] << 8) + message[1]) / 100;
     data->pressure = (float)((message[2] << 8) + message[3]);
 

@@ -1,18 +1,20 @@
 #ifndef _MAIN_H
 #define _MAIN_H
 
+#include "pinout.h"
 #include "config.h"
-#include <Arduino.h>
 
 
 #define BOOL(x) (x = (x + 1) % 2)
-#define BOARD_BTN PC13
 
-extern uint8_t loraMessage[MESSAGE_SIZE];
-extern uint8_t receivedMessage[MESSAGE_SIZE];
 
-extern bool nextMessage;
-extern uint8_t interruptState;
-extern uint32_t currentTime;
+
+//extern uint8_t loraMessage[MESSAGE_SIZE];
+//extern uint8_t receivedMessage[MESSAGE_SIZE];
+//extern bool nextMessage;
+//extern uint8_t interruptState;
+//extern uint32_t currentTime;
+
+void ButtonClickInterrupt(void);
 
 #endif /* _MAIN_H */

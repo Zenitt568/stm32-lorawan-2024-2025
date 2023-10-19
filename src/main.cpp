@@ -2,10 +2,6 @@
 #include "lora.h"
 #include "bme280_sensor.h"
 
-/**
- * Defines how the module behaves
- * Options: MASTER, SLAVE
- */
 uint8_t requestMessage[1];
 uint8_t receivedMessage[MESSAGE_SIZE];
 
@@ -17,7 +13,6 @@ uint32_t currentTime = 0;
 DataRead_t sensorData;
 DataReceived_t receivedData;
 
-void ButtonClickInterrupt(void); //why fp here?
 
 void setup()
 {
@@ -33,7 +28,6 @@ void setup()
     attachInterrupt(digitalPinToInterrupt(BOARD_BTN), ButtonClickInterrupt, RISING);
 
 #endif // SW_TYPE == MASTER
-
 
 }
 

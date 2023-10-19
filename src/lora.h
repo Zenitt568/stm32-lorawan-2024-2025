@@ -8,10 +8,6 @@
 
 namespace LoRa
 {
-    /**
-     * Init Arduino Serial and LoRa module
-     * Init BME280 sensor if LoRa is specififed as SLAVE
-     */
     void ShieldInit(void);
     void DataInit_Lora(DataReceived_t *data);
 
