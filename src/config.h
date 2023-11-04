@@ -1,6 +1,7 @@
 #ifndef _CONFIG_H
 #define _CONFIG_H
 
+
 // MAIN SOFTWARE CONFIGURATIONS
 
 #define SLAVE 0u
@@ -20,5 +21,6 @@
 
 #define SENSOR_ADDR 0x77
 #define SEA_LEVEL_PRESSURE 1013.25
+
 
 #endif

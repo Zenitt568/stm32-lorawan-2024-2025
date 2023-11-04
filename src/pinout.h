@@ -10,5 +10,4 @@
 #define SDA_PIN PB7
 #define SCL_PIN PB6
 
-
 #endif /* _PINOUT_H */
