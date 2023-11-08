@@ -1,6 +1,7 @@
 #include "main.h"
 #include "lora.h"
 #include "bme280_sensor.h"
+#include "ADC.h"
 
 
 uint8_t requestMessage[1];
@@ -15,7 +16,6 @@ volatile int interruptLedCount = 0;
 //LoRa::ModuleType_t moduleType = MODULE_TYPE;
 DataRead_t sensorData;
 DataReceived_t receivedData;
-
 
 // Create instance of TIM2
 HardwareTimer *MyTim = new HardwareTimer(TIM2);
@@ -35,16 +35,8 @@ void updateLedState(void)
   }
 }
 
-
 void setup()
 {
-  pinMode(LED_GREEN, OUTPUT); // configure PA5(builtin LED) as OUTPUT
-
-  MyTim->setOverflow(30, HERTZ_FORMAT); // set interrupt interval ~33ms
-  MyTim->attachInterrupt(updateLedState);
-  
-  
-  
 // TODO: ADD INIT FUNCTIONS WITH CRC 
   /* Init LoRa shield */
   LoRa::ShieldInit();  //dont need to pass module type, it is defined in config.h
@@ -53,17 +45,27 @@ void setup()
   BME280::DataInit_Bme280(&sensorData);  // Init BME280 sensor duplicate
   LoRa::DataInit_Lora(&receivedData);
 
+  pinMode(LED_GREEN, OUTPUT); // configure PA5(builtin LED) as OUTPUT
+
+  /*Init Timer*/
+  MyTim->setOverflow(30, HERTZ_FORMAT); // set interrupt interval ~33ms
+  MyTim->attachInterrupt(updateLedState);
+
 #if SW_TYPE == MASTER
     attachInterrupt(digitalPinToInterrupt(BOARD_BTN), ButtonClickInterrupt, RISING);
 
 #endif // SW_TYPE == MASTER
 
+#if SW_TYPE == SLAVE
+   ADC_Init();
 
+#endif // SW_TYPE == SLAVE
 }
 
 void loop()
 {
 
+  // TODO: ADD HEARTBEAT FUNCTION
   #if SW_TYPE == MASTER
     if (interruptState)
     {
@@ -74,7 +76,8 @@ void loop()
 
     if (loraRadio.read(receivedMessage) > 0)
     {
-      LoRa::ReadResponse(&receivedData, receivedMessage);
+      //LoRa::ReadResponse(&receivedData, receivedMessage);
+      LoRa::ReadData(receivedMessage);
     }
 
   #elif SW_TYPE == SLAVE
@@ -86,13 +89,14 @@ void loop()
 
       BME280::ReadData(&sensorData);
       LoRa::SendResponse(&sensorData);
-
     }
   #endif
-  
+
 }
 
 void ButtonClickInterrupt(void)
 {
   BOOL(interruptState);
 }
+
+
