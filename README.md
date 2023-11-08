@@ -5,12 +5,13 @@ Embedded Systems IOT project that utilizes STM32 L152 Nucleo and USI STM32 to cr
 Developed for IOT: Internet of Things course @ WUT Warsaw University of
 Technology.
 
-Visit the [Wiki](https://github.com/piotrs112/stm32-lorawan/wiki) to read more
+Visit the [Wiki](https://github.com/pmielech/stm32-lorawan/wiki) to read more
 about the project.
 
 # Features
 
-- BME280 Sensor to read surrouding's general temperature and pressure
+- BME280 Sensor to read surrounding's general temperature and pressure
+- [SEN0193](https://wiki.dfrobot.com/Capacitive_Soil_Moisture_Sensor_SKU_SEN0193) Sensor to measure soil moisture levels
 - Request to measuring SLAVE is sent only when button on MASTER board is pressed,
 
 # Built with
@@ -25,6 +26,10 @@ about the project.
 |
 |-- src
 |   |
+|   |- config.h
+|   |- pinout.h
+|   |- ADC.h
+|   |- ADC.cpp
 |   |- main.h
 |   |- main.cpp
 |   |- lora.h (interfacing with LoRa WAN Shield)
@@ -39,4 +44,5 @@ about the project.
 
 ## Future development note
 
-Project was built using PlatformIO extension for VSCode.
+- [Issue] Debugging with current PlatformIO configuration don't work properly
+- [Issue] Sending larger number of bytes
