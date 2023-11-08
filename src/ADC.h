@@ -5,7 +5,7 @@
 
 extern ADC_HandleTypeDef hadc1;
 
-void ADC_Init(void);
+uint8_t ADC_Init(void);
 uint32_t ADC_Read(void);
 float mapADCValueToPercentage(int adcValue);
 

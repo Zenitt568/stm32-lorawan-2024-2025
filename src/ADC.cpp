@@ -5,7 +5,8 @@
 
 ADC_HandleTypeDef hadc1;
 
-void ADC_Init() {
+uint8_t ADC_Init() {
+  uint8_t ret = 0;
   __HAL_RCC_ADC1_CLK_ENABLE();
   hadc1.Instance = ADC1;
   hadc1.Init.ScanConvMode = ADC_SCAN_ENABLE;
@@ -14,15 +15,16 @@ void ADC_Init() {
   hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
   hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
   hadc1.Init.NbrOfConversion = 1;
-  HAL_ADC_Init(&hadc1);
+  ret += HAL_ADC_Init(&hadc1);
 
   ADC_ChannelConfTypeDef sConfig = {0};
   sConfig.Channel = ADC_CHANNEL_12;
   sConfig.Rank = ADC_REGULAR_RANK_1;
   sConfig.SamplingTime = ADC_SAMPLETIME_4CYCLES;
-  HAL_ADC_ConfigChannel(&hadc1, &sConfig);
+  ret += HAL_ADC_ConfigChannel(&hadc1, &sConfig);
 
-  HAL_ADC_Start(&hadc1);
+  ret += HAL_ADC_Start(&hadc1);
+  return ret;
 }
 
 uint32_t ADC_Read() {

@@ -26,7 +26,7 @@ typedef struct
 namespace BME280
 {
     /* Inits BME280 sensor*/
-    void HardwareInit(void);
+    uint8_t HardwareInit(void);
     void DataInit_Bme280(DataRead_t *data);
     void ReadData(DataRead_t *data);
 };

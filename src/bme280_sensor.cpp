@@ -4,8 +4,10 @@ Adafruit_BME280 sensor;
 
 namespace BME280{
 
-void HardwareInit(void)
+uint8_t HardwareInit(void)
 {
+
+    uint8_t ret = 0;
     Serial.println("[INFO] Trying to connect BME280 sensor...");
 
     Wire.setSDA(SDA_PIN);
@@ -14,13 +16,17 @@ void HardwareInit(void)
     if (!sensor.begin(SENSOR_ADDR))
     {
         Serial.println("[ERR] BME280 sensor not found!");
-        while (true)
-        {
-            /* Infinite loop, do not continue if no sensor */
-        }
-    }
+        ret++;
+        // while (true)
+        // {
+        //     /* Infinite loop, do not continue if no sensor */
+        // }
+    } else {
+        Serial.println("[INFO] BME280 sensor connected.");
 
-    Serial.println("[INFO] BME280 sensor connected.");
+    }
+    
+    return ret;
 }
 
 void DataInit_Bme280(DataRead_t *data) // name duplicate

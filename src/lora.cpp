@@ -28,12 +28,6 @@ void ShieldInit(void)
 
     Serial.println("[INFO] Shield ready!");
 
-
-#if SW_TYPE == SLAVE
-    BME280::HardwareInit();     // Init BME280 sensor duplicate
-
-#endif // SW_TYPE == SLAVE
-    
 }
 
 void DataInit_Lora(DataReceived_t *data)

@@ -16,5 +16,7 @@
 //extern uint32_t currentTime;
 
 void ButtonClickInterrupt(void);
+uint8_t initRegs(void);
+
 
 #endif /* _MAIN_H */
