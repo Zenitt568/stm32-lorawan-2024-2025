@@ -63,5 +63,15 @@ ports_box_slave.bind("<<ComboboxSelected>>", lambda event: configure_serial(even
 ports_box_slave.current(0)
 ports_box_slave.grid(row=1, column=1)
 
+master_text = tk.Text(window, height=5, width=30).grid(row=2, column=0, pady =5, padx=5)
+if (serial_object_MASTER.isOpen() == True):
+    FACT_M = serial_object_MASTER.readline()
+    master_text.insert(tk.END, FACT_M)
+
+slave_text = tk.Text(window, height=5, width=30).grid(row=2, column=1, pady =5, padx=5)
+if (serial_object_SLAVE.isOpen() == True):
+    FACT_S = serial_object_SLAVE.readline()
+    master_text.insert(tk.END, FACT_S)
+
 
 window.mainloop()
