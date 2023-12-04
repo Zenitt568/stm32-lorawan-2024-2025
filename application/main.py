@@ -12,7 +12,7 @@ from tkinter.messagebox import showerror
 # --------------------------FUNCTIONS---------------------------
 
 # -------------------------------------POPUP------------------------------------------
-master_port, slave_port = 'COM3', 'COM4'
+master_port, slave_port = '', ''
 helpflag = True
 
 
@@ -31,7 +31,7 @@ def close_window():
 def popup(window):
     global ports_box_master, ports_box_slave, pop
     pop = Toplevel(window)
-    pop.geometry(f"{300}x{100}+{700}+{300}")
+    pop.geometry(f"{300}x{100}+{670}+{180}")
     pop.title("Choose ports for STM32")
     window.lift()
 
@@ -89,6 +89,9 @@ def configure_serial(event):
 
 def receive_data():
 
+    master_text.delete('1.0', tk.END)
+    slave_text.delete('1.0', tk.END)
+
     data_to_show_master = []
     data_to_show_slave = []
 
@@ -121,17 +124,18 @@ def receive_data():
                 size_m = serial_object_MASTER.inWaiting()
                 print(size_m)
                 if size_m:
-                    data = str(serial_object_MASTER.read(size_m).decode("utf-8"))
-                    data_to_show_master.append(data)
-                    print(data)
+                    data_m = str(serial_object_MASTER.read(size_m).decode("utf-8"))
+                    data_to_show_master.append(data_m)
+                    print(data_m)
                     i = 0
 
                 size_l = serial_object_SLAVE.inWaiting()
+                print("_______________________________________")
                 print(size_l)
                 if size_l:
-                    data = str(serial_object_MASTER.read(size_l).decode("utf-8"))
-                    data_to_show_slave.append(data)
-                    print(data)
+                    data_l = str(serial_object_SLAVE.read(size_l))
+                    data_to_show_slave.append(data_l)
+                    print(data_l)
                     i = 0
 
                 i = i + 1
@@ -156,7 +160,7 @@ def receive_data():
 
 window = tk.Tk()
 
-height = 500
+height = 280
 width = 600
 d_x = 500
 d_y = 100
