@@ -31,7 +31,7 @@ def close_window():
 def popup(window):
     global ports_box_master, ports_box_slave, pop
     pop = Toplevel(window)
-    pop.geometry(f"{300}x{100}+{670}+{180}")
+    pop.geometry(f"{300}x{60}+{670}+{180}")
     pop.title("Choose ports for STM32")
     window.lift()
 
