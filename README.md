@@ -46,3 +46,7 @@ about the project.
 
 - [Issue] Debugging with current PlatformIO configuration don't work properly
 - [Issue] Sending larger number of bytes
+
+## Useful links
+
+For more information on how to use ST I-NUCLEO-LRWAN1 Shield with Arduino framework for STM32 look [here](https://github.com/stm32duino/I-NUCLEO-LRWAN1/blob/main/src/LoRaRadio.cpp).
