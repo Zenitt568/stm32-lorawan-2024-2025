@@ -50,4 +50,4 @@ about the project.
 ## Useful links
 
 1. For more information on how to use ST I-NUCLEO-LRWAN1 Shield with Arduino framework for STM32 look into the original [stm32iduino GitHub page](https://github.com/stm32duino/I-NUCLEO-LRWAN1).
-2. For more information on hot to use ST I-NUCLEO-LRWAN1 Shield with STM32 Cube IDE and HAL libraries look into the [ST website](https://www.st.com/en/evaluation-tools/i-nucleo-lrwan1.html) and on the [original GitHub page](https://github.com/USIWP1Module/USI_I-NUCLEO-LRWAN1).
+2. For more information on how to use ST I-NUCLEO-LRWAN1 Shield with STM32 Cube IDE and HAL libraries look into the [ST website](https://www.st.com/en/evaluation-tools/i-nucleo-lrwan1.html) and on the [original GitHub page](https://github.com/USIWP1Module/USI_I-NUCLEO-LRWAN1).
