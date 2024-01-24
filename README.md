@@ -47,6 +47,10 @@ To ensure proper communication between the STM32 and the LoRa Wan shield, it is 
   <img src="images/Lora_Wan_pins.jpg" alt="Picture">
 </p>
 
+BME280 - connect SDA pin to PB7 and SCL pin to PB6
+
+SEN0193 - connect to Converter ADC - Pin ADC/PC_2
+
 ## Future development note
 
 - [Issue] Debugging with current PlatformIO configuration don't work properly
