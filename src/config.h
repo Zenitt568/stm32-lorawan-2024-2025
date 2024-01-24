@@ -1,14 +1,18 @@
 #ifndef _CONFIG_H
 #define _CONFIG_H
 
-
 // MAIN SOFTWARE CONFIGURATIONS
+#define MODE_PIN PA0
 
-#define SLAVE 0u
-#define MASTER 1u
+// the commented #DEINES were used for SOFTWARE configuration of the MASTER and SLAVE.
+// #define SLAVE 1u
+// #define MASTER 0u
 
-#define SW_TYPE     MASTER
-
+// #if (MASTER == 1u)
+//   #define SW_TYPE MASTER
+// #elif (SLAVE == 1u)
+//   #define SW_TYPE SLAVE
+// #endif
 
 // COM CONFIGURATIONS
 #define SERIAL_SPEED 115200u

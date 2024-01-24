@@ -1,8 +1,6 @@
 #include "ADC.h"
 #include "config.h"
 
-#if SW_TYPE == SLAVE
-
 ADC_HandleTypeDef hadc1;
 
 uint8_t ADC_Init() {
@@ -47,4 +45,3 @@ float mapADCValueToPercentage(int adcValue) {
         return percentage;
     }
 }
-#endif // SW_TYPE == SLAVE

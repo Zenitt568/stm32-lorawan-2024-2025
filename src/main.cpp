@@ -38,41 +38,79 @@ void updateLedState(void)
 
 void setup()
 {
+  pinMode(MODE_PIN, INPUT_PULLUP);
   uint8_t init_error = 0;
   init_error = initRegs();
   Serial.print("[INFO] Init Errors: ");
   Serial.println(init_error);
+
+  // State of PIN PA0
+  if (digitalRead(MODE_PIN) == LOW) {
+    // state LOW = MASTER
+    Serial.println("MASTER mode is ON");
+ 
+  } else {
+    // state HIGH = SLAVE
+    Serial.println("SLAVE mode is ON");
+
+  }
 }
 
 void loop()
 {
+  if (digitalRead(MODE_PIN) == LOW) 
+    if (interruptState)
+    {
+      MyTim->resume();     // Start TIM2 and blinking
+      LoRa::SendRequest(); // Should communication be done here or in lora.cpp?
+      BOOL(interruptState);
+    }
 
-// TODO: ADD HEARTBEAT FUNCTION
-#if SW_TYPE == MASTER
-  if (interruptState)
+    if (loraRadio.read(receivedMessage) > 0){
+    {
+      // LoRa::ReadResponse(&receivedData, receivedMessage);
+      LoRa::ReadData(receivedMessage);
+    }
+
+  } else if (digitalRead(MODE_PIN) == HIGH)
   {
-    MyTim->resume();     // Start TIM2 and blinking
-    LoRa::SendRequest(); // Should communication be done here or in lora.cpp?
-    BOOL(interruptState);
-  }
+    if (loraRadio.read(requestMessage) == 0x04)
+    {
+      MyTim->resume(); // Start TIM2 and blinking
+      memset(requestMessage, 0, 1);
+      Serial.println("[INFO] Data request received");
 
-  if (loraRadio.read(receivedMessage) > 0)
-  {
-    // LoRa::ReadResponse(&receivedData, receivedMessage);
-    LoRa::ReadData(receivedMessage);
+      BME280::ReadData(&sensorData);
+      LoRa::SendResponse(&sensorData);
+    }
   }
+// the commented CODE was used for SOFTWARE configuration of the MASTER and SLAVE.
 
-#elif SW_TYPE == SLAVE
-  if (loraRadio.read(requestMessage) == 0x04)
-  {
-    MyTim->resume(); // Start TIM2 and blinking
-    memset(requestMessage, 0, 1);
-    Serial.println("[INFO] Data request received");
+  // #if SW_TYPE == MASTER
+  //   if (interruptState)
+  //   {
+  //     MyTim->resume();     // Start TIM2 and blinking
+  //     LoRa::SendRequest(); // Should communication be done here or in lora.cpp?
+  //     BOOL(interruptState);
+  //   }
 
-    BME280::ReadData(&sensorData);
-    LoRa::SendResponse(&sensorData);
-  }
-#endif
+  //   if (loraRadio.read(receivedMessage) > 0)
+  //   {
+  //     // LoRa::ReadResponse(&receivedData, receivedMessage);
+  //     LoRa::ReadData(receivedMessage);
+  //   }
+
+  // #elif SW_TYPE == SLAVE
+  //   if (loraRadio.read(requestMessage) == 0x04)
+  //     {
+  //       MyTim->resume(); // Start TIM2 and blinking
+  //       memset(requestMessage, 0, 1);
+  //       Serial.println("[INFO] Data request received");
+
+  //       BME280::ReadData(&sensorData);
+  //       LoRa::SendResponse(&sensorData);
+  //     }
+  // #endif
 }
 
 void ButtonClickInterrupt(void)
@@ -87,10 +125,13 @@ uint8_t initRegs(void)
   /* Init LoRa shield */
   LoRa::ShieldInit(); // dont need to pass module type, it is defined in config.h
 
-#if SW_TYPE == SLAVE
-  ret += BME280::HardwareInit(); // Init BME280 sensor duplicate
+  if (digitalRead(MODE_PIN) == HIGH){
+    ret += BME280::HardwareInit(); // Init BME280 sensor duplicate
+  }
+  // #if SW_TYPE == SLAVE
+  //   ret += BME280::HardwareInit(); // Init BME280 sensor duplicate
 
-#endif // SW_TYPE == SLAVE
+  // #endif // SW_TYPE == SLAVE
 
   /* Init data container structs */
   BME280::DataInit_Bme280(&sensorData); // Init BME280 sensor duplicate
@@ -102,15 +143,20 @@ uint8_t initRegs(void)
   MyTim->setOverflow(30, HERTZ_FORMAT); // set interrupt interval ~33ms
   MyTim->attachInterrupt(updateLedState);
 
-#if SW_TYPE == MASTER
-  attachInterrupt(digitalPinToInterrupt(BOARD_BTN), ButtonClickInterrupt, RISING);
+  if (digitalRead(MODE_PIN) == LOW){
+    attachInterrupt(digitalPinToInterrupt(BOARD_BTN), ButtonClickInterrupt, RISING);
 
-#endif // SW_TYPE == MASTER
+  }
+  // #if SW_TYPE == MASTER
+  //   attachInterrupt(digitalPinToInterrupt(BOARD_BTN), ButtonClickInterrupt, RISING);
 
-#if SW_TYPE == SLAVE
-  ret += ADC_Init();
-
-#endif // SW_TYPE == SLAVE
+  // #endif // SW_TYPE == MASTER
+  if (digitalRead(MODE_PIN) == HIGH){
+    ret += ADC_Init();
+  }
+  // #if SW_TYPE == SLAVE
+  //   ret += ADC_Init();
+  // #endif // SW_TYPE == SLAVE
 
   return ret;
 }
