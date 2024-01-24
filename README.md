@@ -43,7 +43,9 @@ about the project.
 ```
 ## Hardware connection
 To ensure proper communication between the STM32 and the LoRa Wan shield, it is necessary to connect the marked pins on the LoRa Wan Shield to the corresponding pins on the STM32 board. First Pin marked on the diagram should be connected to PA9, and the second pin marked on the diagram should be connected to PA10. Below is the diagram with marked pins.
-![Picture](images/Lora_Wan_pins.jpg)
+<p align="center">
+  <img src="images/Lora_Wan_pins.jpg" alt="Picture">
+</p>
 
 ## Future development note
 
