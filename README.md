@@ -65,6 +65,10 @@ In the "application" folder is an application for monitoring the serial port. Du
   <img src="images/application_s.JPG" alt="Picture">
 </p>
 
+## LCD Display
+MASTER - The LCD screen displays information about sending an request and confirmation a response from SLAVE
+SLAVE - The LCD screen displays confirmation an request from MASTER
+
 ## Future development note
 
 - [Issue] Debugging with current PlatformIO configuration don't work properly
