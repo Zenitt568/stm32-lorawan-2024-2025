@@ -7,7 +7,7 @@
 #define SLAVE 0u
 #define MASTER 1u
 
-#define SW_TYPE     MASTER
+#define SW_TYPE     SLAVE
 
 
 // COM CONFIGURATIONS

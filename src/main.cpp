@@ -2,11 +2,13 @@
 #include "lora.h"
 #include "bme280_sensor.h"
 #include "ADC.h"
+#include "LiquidCrystal_I2C.h"
 
 uint8_t requestMessage[1];
 uint8_t receivedMessage[MESSAGE_SIZE];
 
 bool nextMessage = true;
+bool SlaveRequestProcessingFLAG = false;
 uint8_t interruptState = 0;
 uint32_t currentTime = 0;
 
@@ -16,8 +18,10 @@ volatile int interruptLedCount = 0;
 DataRead_t sensorData;
 DataReceived_t receivedData;
 
-// Create instance of TIM2
+// Create instance of TIM2ja 
 HardwareTimer *MyTim = new HardwareTimer(TIM2);
+
+LiquidCrystal_I2C lcd(0x27,  16, 2); 
 
 void turnOffLed(void)
 {
@@ -47,11 +51,16 @@ void setup()
 void loop()
 {
 
+
 // TODO: ADD HEARTBEAT FUNCTION
 #if SW_TYPE == MASTER
   if (interruptState)
   {
     MyTim->resume();     // Start TIM2 and blinking
+    lcd.clear();
+    lcd.setCursor(0,0);
+    lcd.print("Request Send");
+
     LoRa::SendRequest(); // Should communication be done here or in lora.cpp?
     BOOL(interruptState);
   }
@@ -59,19 +68,44 @@ void loop()
   if (loraRadio.read(receivedMessage) > 0)
   {
     // LoRa::ReadResponse(&receivedData, receivedMessage);
+    lcd.clear();
+    lcd.setCursor(0,0);
+    lcd.print("Messege");
+    lcd.setCursor(0,1);
+    lcd.print("Received");
+
     LoRa::ReadData(receivedMessage);
   }
 
 #elif SW_TYPE == SLAVE
-  if (loraRadio.read(requestMessage) == 0x04)
+  if ((loraRadio.read(requestMessage) == 0x04) && (SlaveRequestProcessingFLAG == false))
   {
     MyTim->resume(); // Start TIM2 and blinking
     memset(requestMessage, 0, 1);
     Serial.println("[INFO] Data request received");
-
-    BME280::ReadData(&sensorData);
-    LoRa::SendResponse(&sensorData);
+    SlaveRequestProcessingFLAG = true;
+    lcd.clear();
+    lcd.setCursor(0,0);
+    lcd.print("Data request");
+    lcd.setCursor(0,1);
+    lcd.print("received");
   }
+//Prevents DDoS attacks 
+  if (SlaveRequestProcessingFLAG)
+  {
+    if (BME_ACTIVE){
+    BME280::ReadData(&sensorData);
+    }
+    LoRa::SendResponse(&sensorData);
+
+    delay(2000);
+    SlaveRequestProcessingFLAG = false;
+    lcd.setCursor(0,0);
+    lcd.print("Data request");
+    lcd.setCursor(0,1);
+    lcd.print("send");
+  }
+  
 #endif
 }
 
@@ -86,6 +120,16 @@ uint8_t initRegs(void)
 
   /* Init LoRa shield */
   LoRa::ShieldInit(); // dont need to pass module type, it is defined in config.h
+
+
+      //initialize lcd screen
+  lcd.init();
+      // turn on the backlight
+  lcd.backlight();
+  lcd.setCursor(0,0);
+  lcd.print("Warm LCD");
+  lcd.setCursor(0,1);
+  lcd.print("Greetings!");
 
 #if SW_TYPE == SLAVE
   ret += BME280::HardwareInit(); // Init BME280 sensor duplicate
