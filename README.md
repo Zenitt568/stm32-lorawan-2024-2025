@@ -61,10 +61,6 @@ In the "application" folder is an application for monitoring the serial port. Du
   <img src="images/application_g.jpg" alt="Picture">
 </p>
 
-<p align="center">
-  <img src="images/application_s.jpg" alt="Picture">
-</p>
-
 ## Future development note
 
 - [Issue] Debugging with current PlatformIO configuration don't work properly
