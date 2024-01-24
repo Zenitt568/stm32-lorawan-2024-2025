@@ -53,6 +53,8 @@ BME280 sensor - connect SDA pin to PB7, SCL pin to PB6, Vcc to 3.3 V and GND
 
 SEN0193 sensor - connect to Converter ADC, Analog Pin to Pin ADC/PC_2, Vcc to 3.3V and GND
 
+## Applicatio
+
 ## Future development note
 
 - [Issue] Debugging with current PlatformIO configuration don't work properly
