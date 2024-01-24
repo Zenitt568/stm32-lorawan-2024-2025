@@ -53,7 +53,7 @@ void setup()
     // state LOW = MASTER
     Serial.println("MASTER mode is ON");
  
-  } else {
+  } else if (digitalRead(MODE_PIN) == HIGH) {
     // state HIGH = SLAVE
     Serial.println("SLAVE mode is ON");
 
@@ -62,50 +62,58 @@ void setup()
 
 void loop()
 {
-  if (digitalRead(MODE_PIN) == LOW) 
+  if (digitalRead(MODE_PIN) == LOW) {
     if (interruptState)
     {
       MyTim->resume();     // Start TIM2 and blinking
+      lcd.clear();
+      lcd.setCursor(0,0);
+      lcd.print("Request Sent");
+
       LoRa::SendRequest(); // Should communication be done here or in lora.cpp?
       BOOL(interruptState);
     }
 
+    if (loraRadio.read(receivedMessage) > 0)
+    {
+      // LoRa::ReadResponse(&receivedData, receivedMessage);
+      lcd.clear();
+      lcd.setCursor(0,0);
+      lcd.print("Messege");
+      lcd.setCursor(0,1);
+      lcd.print("Received");
 
-// TODO: ADD HEARTBEAT FUNCTION
-#if SW_TYPE == MASTER
-  if (interruptState)
-  {
-    MyTim->resume();     // Start TIM2 and blinking
-    lcd.clear();
-    lcd.setCursor(0,0);
-    lcd.print("Request Sent");
-
-    LoRa::SendRequest(); // Should communication be done here or in lora.cpp?
-    BOOL(interruptState);
-  }
-
-  if (loraRadio.read(receivedMessage) > 0)
-  {
-    // LoRa::ReadResponse(&receivedData, receivedMessage);
-    lcd.clear();
-    lcd.setCursor(0,0);
-    lcd.print("Messege");
-    lcd.setCursor(0,1);
-    lcd.print("Received");
-
-    LoRa::ReadData(receivedMessage);
-  }
-
+      LoRa::ReadData(receivedMessage);
+    }
   } else if (digitalRead(MODE_PIN) == HIGH)
   {
-    if (loraRadio.read(requestMessage) == 0x04)
+
+    if ((loraRadio.read(requestMessage) == 0x04) && (SlaveRequestProcessingFLAG == false))
     {
       MyTim->resume(); // Start TIM2 and blinking
       memset(requestMessage, 0, 1);
       Serial.println("[INFO] Data request received");
+      SlaveRequestProcessingFLAG = true;
+      lcd.clear();
+      lcd.setCursor(0,0);
+      lcd.print("Data request");
+      lcd.setCursor(0,1);
+      lcd.print("received");
+    }
 
-      BME280::ReadData(&sensorData);
+    if (SlaveRequestProcessingFLAG)
+    {
+      if (BME_ACTIVE){
+        BME280::ReadData(&sensorData);
+        }
       LoRa::SendResponse(&sensorData);
+
+      lcd.setCursor(0,0);
+      lcd.print("Data sent");
+      delay(2000);
+      SlaveRequestProcessingFLAG = false;
+
+      Serial.println("dupa");
     }
   }
 // the commented CODE was used for SOFTWARE configuration of the MASTER and SLAVE.
@@ -135,36 +143,35 @@ void loop()
   //       LoRa::SendResponse(&sensorData);
   //     }
   // #endif
-#elif SW_TYPE == SLAVE
-  if ((loraRadio.read(requestMessage) == 0x04) && (SlaveRequestProcessingFLAG == false))
-  {
-    MyTim->resume(); // Start TIM2 and blinking
-    memset(requestMessage, 0, 1);
-    Serial.println("[INFO] Data request received");
-    SlaveRequestProcessingFLAG = true;
-    lcd.clear();
-    lcd.setCursor(0,0);
-    lcd.print("Data request");
-    lcd.setCursor(0,1);
-    lcd.print("received");
-  }
+// #elif SW_TYPE == SLAVE
+//   if ((loraRadio.read(requestMessage) == 0x04) && (SlaveRequestProcessingFLAG == false))
+//   {
+//     MyTim->resume(); // Start TIM2 and blinking
+//     memset(requestMessage, 0, 1);
+//     Serial.println("[INFO] Data request received");
+//     SlaveRequestProcessingFLAG = true;
+//     lcd.clear();
+//     lcd.setCursor(0,0);
+//     lcd.print("Data request");
+//     lcd.setCursor(0,1);
+//     lcd.print("received");
+//   }
 
-  if (SlaveRequestProcessingFLAG)
-  {
-    if (BME_ACTIVE){
-    BME280::ReadData(&sensorData);
-    }
-    LoRa::SendResponse(&sensorData);
+//   if (SlaveRequestProcessingFLAG)
+//   {
+//     if (BME_ACTIVE){
+//     BME280::ReadData(&sensorData);
+//     }
+//     LoRa::SendResponse(&sensorData);
 
-    lcd.setCursor(0,0);
-    lcd.print("Data sent");
-    delay(2000);
-    SlaveRequestProcessingFLAG = false;
+//     lcd.setCursor(0,0);
+//     lcd.print("Data sent");
+//     delay(2000);
+//     SlaveRequestProcessingFLAG = false;
 
-    Serial.println("dupa");
-  }
-  
-#endif
+//     Serial.println("dupa");
+//   }
+//   #endif
 }
 
 void ButtonClickInterrupt(void)
@@ -188,11 +195,6 @@ uint8_t initRegs(void)
   lcd.print("Warm LCD");
   lcd.setCursor(0,1);
   lcd.print("Greetings!");
-
-#if SW_TYPE == SLAVE
-  ret += BME280::HardwareInit(); // Init BME280 sensor duplicate
-
-  // #endif // SW_TYPE == SLAVE
 
   /* Init data container structs */
   BME280::DataInit_Bme280(&sensorData); // Init BME280 sensor duplicate
