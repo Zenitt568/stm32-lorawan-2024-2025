@@ -85,6 +85,7 @@ void SendResponse(DataRead_t *data)
 
     /*Sending 2nd packet of data*/
     loraRadio.write(message2, 4);
+    //SlaveRequestProcessingFLAG = false;
 }
 
 /*Not in use*/

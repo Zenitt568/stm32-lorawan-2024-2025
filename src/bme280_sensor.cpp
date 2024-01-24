@@ -2,6 +2,8 @@
 
 Adafruit_BME280 sensor;
 
+bool BME_ACTIVE = false;
+
 namespace BME280{
 
 uint8_t HardwareInit(void)
@@ -16,6 +18,7 @@ uint8_t HardwareInit(void)
     if (!sensor.begin(SENSOR_ADDR))
     {
         Serial.println("[ERR] BME280 sensor not found!");
+        BME_ACTIVE = false;
         ret++;
         // while (true)
         // {
@@ -23,6 +26,7 @@ uint8_t HardwareInit(void)
         // }
     } else {
         Serial.println("[INFO] BME280 sensor connected.");
+        BME_ACTIVE = true;
 
     }
     

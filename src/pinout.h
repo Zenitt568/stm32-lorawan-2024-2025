@@ -7,7 +7,7 @@
 #define BOARD_BTN PC13
 
 // BME SENSOR PINS
-#define SDA_PIN PB7
-#define SCL_PIN PB6
+#define SDA_PIN PB9
+#define SCL_PIN PB8
 
 #endif /* _PINOUT_H */

@@ -7,7 +7,7 @@
 
 #define BOOL(x) (x = (x + 1) % 2)
 
-
+extern bool BME_ACTIVE;
 
 //extern uint8_t loraMessage[MESSAGE_SIZE];
 //extern uint8_t receivedMessage[MESSAGE_SIZE];
