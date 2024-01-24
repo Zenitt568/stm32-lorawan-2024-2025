@@ -19,6 +19,8 @@ about the project.
 - STM32 L152 Nucleo-64 development board,
 - USI STM32 Nucleo expansion board for LoRa,
 - BME280 I2C/SPI breakout board,
+- SEN0193 breakout board,
+- LCD display
 
 # File structure:
 
