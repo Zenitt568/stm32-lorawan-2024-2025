@@ -13,6 +13,7 @@ about the project.
 - BME280 Sensor to read surrounding's general temperature and pressure
 - [SEN0193](https://wiki.dfrobot.com/Capacitive_Soil_Moisture_Sensor_SKU_SEN0193) Sensor to measure soil moisture levels
 - Request to measuring SLAVE is sent only when button on MASTER board is pressed,
+- Choice of master or slave depend on PA0 Pin on STM32 Board
 
 # Built with
 
@@ -45,6 +46,7 @@ about the project.
 ```
 ## Hardware connection
 To ensure proper communication between the STM32 and the LoRa Wan shield, it is necessary to connect the marked pins on the LoRa Wan Shield to the corresponding pins on the STM32 board. First Pin marked on the diagram should be connected to PA9, and the second pin marked on the diagram should be connected to PA10. Below is the diagram with marked pins.
+
 <p align="center">
   <img src="images/Lora_Wan_pins.jpg" alt="Picture">
 </p>
@@ -52,6 +54,10 @@ To ensure proper communication between the STM32 and the LoRa Wan shield, it is 
 BME280 sensor - connect SDA pin to PB7, SCL pin to PB6, Vcc to 3.3 V and GND
 
 SEN0193 sensor - connect to Converter ADC, Analog Pin to Pin ADC/PC_2, Vcc to 3.3V and GND
+
+Choice of Master or slave:
+  Pin PA0 to GND - STM32 board work as Master
+  Pin PA0 to Vcc - STM32 board work as Slave
 
 ## Application
 
