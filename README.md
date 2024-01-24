@@ -49,9 +49,9 @@ To ensure proper communication between the STM32 and the LoRa Wan shield, it is 
   <img src="images/Lora_Wan_pins.jpg" alt="Picture">
 </p>
 
-BME280 sensor - connect SDA pin to PB7 and SCL pin to PB6
+BME280 sensor - connect SDA pin to PB7, SCL pin to PB6, Vcc to 3.3 V and GND
 
-SEN0193 sensor - connect to Converter ADC - Pin ADC/PC_2
+SEN0193 sensor - connect to Converter ADC, Analog Pin to Pin ADC/PC_2, Vcc to 3.3V and GND
 
 ## Future development note
 
