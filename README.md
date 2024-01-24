@@ -66,7 +66,7 @@ In the "application" folder is an application for monitoring the serial port. Du
 </p>
 
 ## LCD Display
-MASTER - The LCD screen displays information about sending an request and confirmation a response from SLAVE
+MASTER - The LCD screen displays information about sending an request and confirmation a response from SLAVE <br>
 SLAVE - The LCD screen displays confirmation an request from MASTER
 
 ## Future development note
