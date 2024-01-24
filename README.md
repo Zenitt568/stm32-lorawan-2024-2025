@@ -58,11 +58,11 @@ SEN0193 sensor - connect to Converter ADC, Analog Pin to Pin ADC/PC_2, Vcc to 3.
 In the "application" folder is an application for monitoring the serial port. During the operation of the application, the STM32 boards communicating with each other must be connected to the computer. Initially, it is necessary to select the COM port on which the slave and master are located. Next user should press the "Listen to data" button, we can watch transmit measurements from sensors between the devices. Below are screenshots of the application.
 
 <p align="center">
-  <img src="images/application1.jpg" alt="Picture">
+  <img src="images/application_g.jpg" alt="Picture">
 </p>
 
 <p align="center">
-  <img src="images/application2.jpg" alt="Picture">
+  <img src="images/application_s.jpg" alt="Picture">
 </p>
 
 ## Future development note
