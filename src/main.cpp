@@ -59,7 +59,7 @@ void loop()
     MyTim->resume();     // Start TIM2 and blinking
     lcd.clear();
     lcd.setCursor(0,0);
-    lcd.print("Request Send");
+    lcd.print("Request Sent");
 
     LoRa::SendRequest(); // Should communication be done here or in lora.cpp?
     BOOL(interruptState);
@@ -90,7 +90,7 @@ void loop()
     lcd.setCursor(0,1);
     lcd.print("received");
   }
-//Prevents DDoS attacks 
+
   if (SlaveRequestProcessingFLAG)
   {
     if (BME_ACTIVE){
@@ -98,12 +98,12 @@ void loop()
     }
     LoRa::SendResponse(&sensorData);
 
+    lcd.setCursor(0,0);
+    lcd.print("Data sent");
     delay(2000);
     SlaveRequestProcessingFLAG = false;
-    lcd.setCursor(0,0);
-    lcd.print("Data request");
-    lcd.setCursor(0,1);
-    lcd.print("send");
+
+    Serial.println("dupa");
   }
   
 #endif
