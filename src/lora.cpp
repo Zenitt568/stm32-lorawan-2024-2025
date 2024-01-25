@@ -11,9 +11,9 @@ namespace LoRa{
 void ShieldInit(void)
 {
     Serial.begin(SERIAL_SPEED);
-if (digitalRead(MODE_PIN) == LOW){
+if (digitalRead(MODE_PIN) == HIGH){
     Serial.println("LoRa SLAVE Module");
-}else if (digitalRead(MODE_PIN) == HIGH){
+}else if (digitalRead(MODE_PIN) == LOW){
     Serial.println("LoRa MASTER Module");
 }
 // #if SW_TYPE == SLAVE
