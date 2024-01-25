@@ -57,7 +57,10 @@ SEN0193 sensor - connect to Converter ADC, Analog Pin to Pin ADC/PC_2, Vcc to 3.
 
 Choice of Master or slave:
   Pin PA0 to GND - STM32 board work as Master
-  Pin PA0 to Vcc - STM32 board work as Slave
+  Pin PA0 PULLUP - STM32 board work as Slave
+<p align="center">
+  <img src="images/Lora_Wan_pin_pa0.png" alt="Picture">
+</p>
 
 ## Application
 
