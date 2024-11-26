@@ -1,148 +1,110 @@
+#include <stdint.h>
 #include "lora.h"
 #include "config.h"
 #include "bme280_sensor.h"
 #include "ADC.h"
+#include "main.h"
 
 HardwareSerial SerialLora(PA10, PA9);
 
 namespace LoRa{
-
-
-void ShieldInit(void)
-{
+  void ShieldInit(void)
+  {
     Serial.begin(SERIAL_SPEED);
-if (digitalRead(MODE_PIN) == HIGH){
-    Serial.println("LoRa SLAVE Module");
-}else if (digitalRead(MODE_PIN) == LOW){
-    Serial.println("LoRa MASTER Module");
-}
-// #if SW_TYPE == SLAVE
-//     Serial.println("LoRa SLAVE Module");
-
-// #elif SW_TYPE == MASTER
-//     Serial.println("LoRa MASTER Module");
-
-// #endif // SW_TYPE
-    
+    if (isSlave())
+    {
+      Serial.println("LoRa SLAVE Module");
+    }else
+    {
+      Serial.println("LoRa MASTER Module");
+    }
+      
     while (!loraRadio.begin(&SerialLora))
     {
-        Serial.println("[INFO] LoRa Shield not ready!");
-        delay(1000); /* Give module 1s to init */
+      Serial.println("[INFO] LoRa Shield not ready!");
+      delay(1000); /* Give module 1s to init */
     }
-
     Serial.println("[INFO] Shield ready!");
+  }
 
-}
 
-void DataInit_Lora(DataReceived_t *data)
-{
-    data->temperature = 0;
-    data->pressure = 0;
-}
 
-void SendRequest(void)
-{
+  void SendRequest(void)
+  {
     uint8_t message[1];
     message[0] = 0xFF;
 
     Serial.println("[INFO] Sending new request");
 
     loraRadio.write(message, 1);
-}
+  }
 
-void SendResponse(DataRead_t *data)
-{
+  void SendResponse(Sensors_DataRead *sensor)
+  {
     uint8_t message[MESSAGE_SIZE];
-    uint8_t message2[MESSAGE_SIZE];
 
-    /* Split each 16-bit data to 2x8-bit ones, with bit masking */
-    message[0] = (data->temperature & 0xFF00) >> 8;
-    message[1] = (data->temperature & 0x00FF);
-    message[2] = (data->pressure & 0xFF00) >> 8;
-    message[3] = (data->pressure & 0x00FF);
+    // Split each 16-bit data to 2x8-bit ones with bit masking
+    message[0] = (sensor->BME_sensorData.temperature & 0xFF00) >> 8;
+    message[1] = (sensor->BME_sensorData.temperature & 0x00FF);
+    message[2] = (sensor->BME_sensorData.pressure & 0xFF00) >> 8;
+    message[3] = (sensor->BME_sensorData.pressure & 0x00FF);
 
-     // 2nd packet with humidity
-    float soil_humidity =  mapADCValueToPercentage(ADC_Read());
+    float soil_humidity =  mapADCValueToPercentage(ADC_Read(), SEN0193_MIN_VALUE, SEN0193_MAX_VALUE);
+    message[4] = (int(soil_humidity*100) & 0xFF00) >> 8;
+    message[5] = (int(soil_humidity*100) & 0x00FF);
 
-    /*DEBUG*/
-    //Serial.println("Zmierzona wilgotnosc gleby:");
-    /*DEBUG*/
+    message[6] = (sensor->AS_sensorData.temperature & 0xFF00) >> 8;
+    message[7] = (sensor->AS_sensorData.temperature & 0x00FF);
 
-    message2[0] = (int(soil_humidity*100) & 0xFF00) >> 8;
-    message2[1] = (int(soil_humidity*100) & 0x00FF);
-    message2[2] = 0x04; //Attach EOT at the end of humidity string
+    for (uint8_t i = 0; i < AS726x_NUM_CHANNELS; i++) // Inserting read color data for all 6 channels into the message
+    {
+      uint8_t ind = 8+2*i;
+      message[ind] = (int(sensor->AS_sensorData.color[i]) & 0xFF00) >> 8;
+      message[ind+1] = (int(sensor->AS_sensorData.color[i]) & 0x00FF);
+    }
+    message[20] = EOT; //Attach EOT at the end of string
 
     Serial.println("[INFO] Sending response");
 
-    /*DEBUG*/  
-    /*for (uint8_t i = 0; i<4; i++){
-        Serial.println((float)message[i]);
-    }
-    for (uint8_t i = 0; i<4; i++){
-        Serial.println((float)message2[i]);
-    }*/
-    /*DEBUG*/
+    loraRadio.write(message, MESSAGE_SIZE);
+    delay(3000);
+  }
 
-    /*Sending 1st packet of data*/
-    loraRadio.write(message, 4);
-    delay(2000);
-
-    /*Sending 2nd packet of data*/
-    loraRadio.write(message2, 4);
-    //SlaveRequestProcessingFLAG = false;
-}
-
-/*Not in use*/
-void ReadResponse(DataReceived_t *data, uint8_t message[])
-{
-    /* Merge each 2x8-bit packs to 16-bit ones, fix floats */
-    
-    data->temperature = (float)((message[0] << 8) + message[1]) / 100;
-    data->pressure = (float)((message[2] << 8) + message[3]);
-    
-    memset(message, 0, MESSAGE_SIZE);
-
-    // Message strings array
-    String serialMessage[5] = {
-        "[INFO] Response received:",
-        "\tTemperature: " + String(data->temperature) + " \u00b0C",
-        "\tPressure: " + String(data->pressure) + " hPa"
-    };
-
-    for (uint8_t idx = 0; idx < (sizeof(serialMessage) / sizeof(serialMessage[0])); idx++){
-        Serial.println(serialMessage[idx]);
-    }
-    Serial.println(); //To separate incoming messages
-}
-
-void ReadData(uint8_t message[]){
-
+  void ReadData(uint8_t message[])
+  {
     loraRadio.read(message);
 
-    //Received packet with humidity
-    if (message[2] == 0x04){
-        float received_humidity = (float)((message[0] << 8) + message[1]) / 100;
-        String humidity_response[] = {
-            "\tSoil humidity: "+ String(received_humidity) + "%"
-        };
+    // temperature and pressure
+    float received_temperature = (float)((message[0] << 8) + message[1]) / 100;
+    float received_pressure = (float)((message[2] << 8) + message[3]);
+    float received_humidity = (float)((message[4] << 8) + message[5]) / 100;
+    float received_temperature_on_sensor = (message[6] << 8) + message[7];
+    float received_color_v = (message[8] << 8) + message[9];
+    float received_color_b = (message[10] << 8) + message[11];
+    float received_color_g = (message[12] << 8) + message[13];
+    float received_color_y = (message[14] << 8) + message[15];
+    float received_color_o = (message[16] << 8) + message[17];
+    float received_color_r = (message[18] << 8) + message[19];
 
-        for (uint8_t idx = 0; idx < (sizeof(humidity_response) / sizeof(humidity_response[0])); idx++){
-            Serial.println(humidity_response[idx]);
-        }
-    }
-    //Received packet with temperature and pressure
-    else{
-        float received_temperature = (float)((message[0] << 8) + message[1]) / 100;
-        float received_pressure = (float)((message[2] << 8) + message[3]);
-        String BME_response[] = {
-            "[INFO] Response received:",
-            "\tTemperature: " + String(received_temperature) + " \u00b0C",
-            "\tPressure: " + String(received_pressure) + " hPa"
-        };
+    String sensors_response[] = 
+    {
+      "[INFO] Response received:",
+      "\tTemperature: " + String(received_temperature) + " \u00b0C",
+      "\tPressure: " + String(received_pressure) + " hPa",
+      "\tSoil humidity: " + String(received_humidity) + "%",
+      "\tTemperature on sensor: " + String(received_temperature_on_sensor) + " \u00b0C",
+      "\tViolet: " + String(received_color_v),
+      "\tBlue: " + String(received_color_b),
+      "\tGreen: " + String(received_color_g),
+      "\tYellow: " + String(received_color_y),
+      "\tOrange: " + String(received_color_o),
+      "\tRed: " + String(received_color_r)
+    };
 
-        for (uint8_t idx = 0; idx < (sizeof(BME_response) / sizeof(BME_response[0])); idx++){
-            Serial.println(BME_response[idx]);
-        }
+    uint8_t responseLength = (sizeof(sensors_response) / sizeof(sensors_response[0]));
+    for (uint8_t idx = 0; idx < responseLength; idx++)
+    {
+      Serial.println(sensors_response[idx]);
     }
-}
+  }
 }

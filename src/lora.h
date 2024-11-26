@@ -5,16 +5,22 @@
 #include <Wire.h>
 #include "LoRaRadio.h"
 #include "bme280_sensor.h"
+#include "AS7262_sensor.h"
+
+typedef struct      
+{
+  BME280_DataRead_t BME_sensorData;
+  AS7262_DataRead_t AS_sensorData;
+} Sensors_DataRead;
+
 
 namespace LoRa
 {
-    void ShieldInit(void);
-    void DataInit_Lora(DataReceived_t *data);
+  void ShieldInit(void);
 
-    void SendRequest(void);
-    void ReadData(uint8_t message[]);
-    void SendResponse(DataRead_t *data);
-    void ReadResponse(DataReceived_t *data, uint8_t message[]);
-};
+  void SendRequest(void);
+  void SendResponse(Sensors_DataRead *data);
+  void ReadData(uint8_t message[]);
+}
 
-#endif /* _LORA_H */
+#endif

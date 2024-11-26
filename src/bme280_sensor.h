@@ -11,24 +11,22 @@
 
 typedef struct      
 {
-    uint16_t temperature;
-    uint16_t pressure;
-
-} DataRead_t;
+  uint16_t temperature;
+  uint16_t pressure;
+} BME280_DataRead_t;
 
 typedef struct
 {
-    float temperature;
-    float pressure;
+  float temperature;
+  float pressure;
+} BME280_DataReceived_t;
 
-} DataReceived_t;
 
 namespace BME280
 {
-    /* Inits BME280 sensor*/
-    uint8_t HardwareInit(void);
-    void DataInit_Bme280(DataRead_t *data);
-    void ReadData(DataRead_t *data);
-};
+  void HardwareInit(void);
+  void DataInit(BME280_DataRead_t *data);
+  void ReadData(BME280_DataRead_t *data);
+}
 
-#endif /* _BME_280 */
+#endif

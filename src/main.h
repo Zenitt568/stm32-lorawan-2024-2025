@@ -5,18 +5,12 @@
 #include "config.h"
 
 
-#define BOOL(x) (x = (x + 1) % 2)
-
 extern bool BME_ACTIVE;
-
-//extern uint8_t loraMessage[MESSAGE_SIZE];
-//extern uint8_t receivedMessage[MESSAGE_SIZE];
-//extern bool nextMessage;
-//extern uint8_t interruptState;
-//extern uint32_t currentTime;
+extern bool AS_ACTIVE;
 
 void ButtonClickInterrupt(void);
-uint8_t initRegs(void);
-
+HAL_StatusTypeDef* initRegs(void);
+void updateLedState(void);
+bool isSlave(void);
 
 #endif /* _MAIN_H */
