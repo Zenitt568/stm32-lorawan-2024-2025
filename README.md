@@ -10,10 +10,11 @@ about the project.
 
 # Features
 
-- BME280 Sensor to read surrounding's general temperature and pressure
+- [BME280](https://www.bosch-sensortec.com/products/environmental-sensors/humidity-sensors-bme280/) Sensor to read surrounding's general temperature and pressure
 - [SEN0193](https://wiki.dfrobot.com/Capacitive_Soil_Moisture_Sensor_SKU_SEN0193) Sensor to measure soil moisture levels
-- Request to measuring SLAVE is sent only when button on MASTER board is pressed,
-- Choice of master or slave depend on PA0 Pin on STM32 Board
+- [AS7262](https://learn.adafruit.com/adafruit-as7262-6-channel-visible-light-sensor) Sensor to measure 6 channels of visible light (red, orange, yellow, green, blue, and violet) [NEW]
+- Request to measuring SLAVE is sent only when USER button on MASTER board is pressed
+- Choice of master or slave depends on PA0 Pin on STM32 Board
 
 # Built with
 
@@ -21,7 +22,7 @@ about the project.
 - USI STM32 Nucleo expansion board for LoRa,
 - BME280 I2C/SPI breakout board,
 - SEN0193 breakout board,
-- LCD display
+- AS7262 breakout board,
 
 # File structure:
 
@@ -37,8 +38,11 @@ about the project.
 |   |- main.cpp
 |   |- lora.h (interfacing with LoRa WAN Shield)
 |   |- lora.cpp
+|   |- LoRa.ino
 |   |- bme280_sensor.h (interfacing, using Adafruit BME280 sensor)
 |   |- bme280_sensor.cpp
+|   |- AS7262_sensor.h
+|   |- AS7262_sensor.cpp
 |
 |- LICENSE
 |- platformio.ini
@@ -55,6 +59,8 @@ BME280 sensor - connect SDA pin to PB7, SCL pin to PB6, Vcc to 3.3 V and GND
 
 SEN0193 sensor - connect to Converter ADC, Analog Pin to Pin ADC/PC_2, Vcc to 3.3V and GND
 
+AS7262 sensor - connect SDA pin to PB9, SCL pin to PB8, Vcc to 5V and GND.
+
 Choice of Master or slave:
   Pin PA0 to GND - STM32 board work as Master
   Pin PA0 PULLUP - STM32 board work as Slave
@@ -62,26 +68,10 @@ Choice of Master or slave:
   <img src="images/Lora_Wan_pin_pa0.png" alt="Picture">
 </p>
 
-## Application
-
-In the "application" folder is an application for monitoring the serial port. During the operation of the application, the STM32 boards communicating with each other must be connected to the computer. Initially, it is necessary to select the COM port on which the slave and master are located. Next user should press the "Listen to data" button, we can watch transmit measurements from sensors between the devices. Below are screenshots of the application.
-
-<p align="center">
-  <img src="images/application_g.JPG" alt="Picture">
-</p>
-
-<p align="center">
-  <img src="images/application_s.JPG" alt="Picture">
-</p>
-
-## LCD Display
-MASTER - The LCD screen displays information about sending an request and confirmation a response from SLAVE <br>
-SLAVE - The LCD screen displays confirmation an request from MASTER
-
 ## Future development note
 
 - [Issue] Debugging with current PlatformIO configuration don't work properly
-- [Issue] Sending larger number of bytes
+- [Issue] Sending larger number of bytes [SOLVED]
 
 ## Useful links
 
